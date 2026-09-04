@@ -1,0 +1,22 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# --- Virtual environment ---
+venv/
+.venv/
+
+# --- Secrets (NEVER commit these) ---
+.env
+
+# --- Local database (see Module 8: we handle CI persistence separately) ---
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# --- Editor / OS junk ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
