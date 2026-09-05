@@ -60,10 +60,10 @@ Built in modules — see commit history.
 
 - [x] **Module 0** — Project setup (structure, git, dependencies)
 - [x] **Module 1** — Data model + first scraper
-- [ ] **Module 2** — SQLite storage
-- [ ] **Module 3** — Diffing (new vs. seen)
-- [ ] **Module 4** — Filtering (location + term)
-- [ ] **Module 5** — Email notifications
+- [x] **Module 2** — SQLite storage
+- [x] **Module 3** — Diffing (new vs. seen)
+- [x] **Module 4** — Filtering (location + term)
+- [x] **Module 5** — Email notifications
 - [ ] **Module 6** — Remaining scrapers
 - [ ] **Module 7** — Config & registry
 - [ ] **Module 8** — GitHub Actions automation
