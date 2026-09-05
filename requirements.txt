@@ -9,5 +9,5 @@ lxml
 python-dotenv
 
 # NOTE: SQLite, smtplib (email), and json are part of Python's standard
-# library, so they don't appear here. We'll pin exact versions later
+# library, so they don't appear here. I'll pin exact versions later
 # (Module 8) with `pip freeze` for reproducible CI builds.

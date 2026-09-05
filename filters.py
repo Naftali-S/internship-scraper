@@ -2,7 +2,6 @@ INTERN_KEYWORDS = ["intern", "co-op", "coop", "student"]
 LOCATION_KEYWORDS = ["ottawa", "kanata"]
 REMOTE_CANADA_KEYWORDS = ["remote-canada", "remote - canada", "canada remote", "remote, canada"]
 TERM_KEYWORDS = ["summer 2027", "2027 summer", "may 2027"]
-
 def is_internship(title):
     text = title.lower()
     return any(keyword in text for keyword in INTERN_KEYWORDS)
