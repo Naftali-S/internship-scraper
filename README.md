@@ -59,7 +59,7 @@ cp .env.example .env         # then fill in your Gmail app password
 Built in modules — see commit history.
 
 - [x] **Module 0** — Project setup (structure, git, dependencies)
-- [ ] **Module 1** — Data model + first scraper
+- [x] **Module 1** — Data model + first scraper
 - [ ] **Module 2** — SQLite storage
 - [ ] **Module 3** — Diffing (new vs. seen)
 - [ ] **Module 4** — Filtering (location + term)
