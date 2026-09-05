@@ -56,14 +56,15 @@ cp .env.example .env         # then fill in your Gmail app password
 
 ## Development log
 
-Built in modules — see commit history.
+Built in modules - see commit history.
 
-- [x] **Module 0** — Project setup (structure, git, dependencies)
-- [x] **Module 1** — Data model + first scraper
-- [x] **Module 2** — SQLite storage
-- [x] **Module 3** — Diffing (new vs. seen)
-- [x] **Module 4** — Filtering (location + term)
-- [x] **Module 5** — Email notifications
-- [x] **Module 6** — Remaining scrapers
-- [x] **Module 7** — Config & registry
-- [x] **Module 8** — GitHub Actions automation
+- [x] **Module 0:** Project setup (structure, git, dependencies)
+- [x] **Module 1:**  Data model + first scraper
+- [x] **Module 2:**  SQLite storage
+- [x] **Module 3:**  Diffing (new vs. seen)
+- [x] **Module 4:**  Filtering (location + term)
+- [x] **Module 5:**  Email notifications
+- [x] **Module 6:**  Remaining scrapers
+- [x] **Module 7:**  Config & registry
+- [x] **Module 8:**  GitHub Actions automation
+- [x] **Module 10:** Config-driven company registry
