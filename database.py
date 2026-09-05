@@ -36,6 +36,10 @@ def save_postings(conn, postings):
     conn.commit()
     return conn.total_changes - before
 
+def get_existing_keys(conn):
+    rows = conn.execute("SELECT unique_key FROM postings").fetchall()
+    return {row[0] for row in rows}
+
 if __name__ == "__main__":
     from ciena import fetch_ciena
     conn = get_connection()
