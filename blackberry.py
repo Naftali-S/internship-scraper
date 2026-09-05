@@ -3,11 +3,11 @@ import requests
 from models import Posting
 from filters import is_internship, is_target_location, mentions_term
 
-DETAIL_BASE = "https://ciena.wd5.myworkdayjobs.com/wday/cxs/ciena/Careers"
-PUBLIC_BASE = "https://ciena.wd5.myworkdayjobs.com/en-US/Careers"
+DETAIL_BASE = "https://bb.wd3.myworkdayjobs.com/wday/cxs/bb/BlackBerry"
+PUBLIC_BASE = "https://bb.wd3.myworkdayjobs.com/en-US/BlackBerry"
 
 
-def fetch_ciena_detail(url):
+def fetch_blackberry_detail(url):
     """Given a posting's public URL, return (full_location_text, description)."""
     external_path = url.replace(PUBLIC_BASE, "")    #turn the public URL back into the API path
     headers = {"User-Agent": "Mozilla/5.0 (compatible; internship-scraper/0.1)",
@@ -21,8 +21,8 @@ def fetch_ciena_detail(url):
     description = info.get("jobDescription", "")
     return location_text, description
 
-def fetch_ciena() -> list[Posting]:
-    url = "https://ciena.wd5.myworkdayjobs.com/wday/cxs/ciena/Careers/jobs"
+def fetch_blackberry() -> list[Posting]:
+    url = "https://bb.wd3.myworkdayjobs.com/wday/cxs/bb/BlackBerry/jobs"
     # appears as user
     headers = {"User-Agent": "Mozilla/5.0(compatible; internship-scraper/0.1)"}
     postings = [] # collect posting objects
@@ -39,9 +39,9 @@ def fetch_ciena() -> list[Posting]:
         for job in page:
             external_path = job["externalPath"]
             job_id = external_path.rsplit("_", 1)[-1] # splits on the last underscore and takes the piece after it
-            job_url = "https://ciena.wd5.myworkdayjobs.com/en-US/Careers" + external_path
+            job_url = PUBLIC_BASE + external_path
             postings.append(Posting(
-                company="Ciena",
+                company="BlackBerry",
                 title=job["title"],
                 location=job.get("locationsText", ""),
                 url=job_url,
@@ -54,12 +54,12 @@ def fetch_ciena() -> list[Posting]:
         time.sleep(0.3)    # be polite
     return postings
 
-def get_ciena_postings():
-    all_postings = fetch_ciena()
+def get_blackberry_postings():
+    all_postings = fetch_blackberry()
     interns = [p for p in all_postings if is_internship(p.title)]
     result = []
     for p in interns:
-        location_text, description = fetch_ciena_detail(p.url)
+        location_text, description = fetch_blackberry_detail(p.url)
         p.location = location_text
         haystack = p.title + " " + description
         if is_target_location(location_text) and mentions_term(haystack):
@@ -68,7 +68,7 @@ def get_ciena_postings():
     return result
 
 if __name__ == "__main__":
-    results = fetch_ciena()
+    results = fetch_blackberry()
     print(f"Fetched {len(results)} postings. First 5:")
     for p in results[:5]:
         print(f" - {p.title} | {p.location} | {p.job_id}")
