@@ -65,5 +65,5 @@ Built in modules — see commit history.
 - [x] **Module 4** — Filtering (location + term)
 - [x] **Module 5** — Email notifications
 - [x] **Module 6** — Remaining scrapers
-- [ ] **Module 7** — Config & registry
+- [x] **Module 7** — Config & registry
 - [ ] **Module 8** — GitHub Actions automation
