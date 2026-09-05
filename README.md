@@ -5,18 +5,18 @@ A small, self-hosted tool that watches a handful of companies' career pages for
 Canada-remote**, stores them in a local database, and **emails me only the new
 ones**. Designed to run automatically and for free on **GitHub Actions**.
 
-> This repo doubles as a learning log — I'm building it to get hands-on
+> This repo doubles as a learning log I'm building it to get hands-on
 > experience with web scraping, databases, diffing, email automation, and CI.
 
 ## Companies tracked (starting set)
 
 | Company | Location focus | Scrape type |
 |---|---|---|
-| Shopify | Ottawa | _TBD (Module 1)_ |
-| Ciena | Kanata | _TBD (likely Workday JSON API)_ |
+| Shopify | Ottawa | _TBD_ |
+| Ciena | Kanata | Workday |
 | Kinaxis | Kanata / Ottawa | _TBD_ |
 | Ross Video | Ottawa | _TBD_ |
-| BlackBerry / QNX | Kanata | _TBD (likely Workday JSON API)_ |
+| BlackBerry / QNX | Kanata | Workday |
 
 Adding a new company = drop one new file in `scrapers/` and register it.
 
@@ -28,7 +28,7 @@ scrapers/*  ->  filter (location + Summer 2027)  ->  database (diff)  ->  email 
 
 - **Static sites** are parsed from HTML with BeautifulSoup.
 - **Dynamic sites** are read from their underlying JSON API (found via the
-  browser Network tab) — faster and more reliable than a headless browser.
+  browser Network tab) faster and more reliable than a headless browser.
 
 ## Project layout
 
@@ -66,4 +66,4 @@ Built in modules — see commit history.
 - [x] **Module 5** — Email notifications
 - [x] **Module 6** — Remaining scrapers
 - [x] **Module 7** — Config & registry
-- [ ] **Module 8** — GitHub Actions automation
+- [x] **Module 8** — GitHub Actions automation
