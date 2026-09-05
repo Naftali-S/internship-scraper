@@ -2,6 +2,24 @@ import time
 import requests
 from models import Posting
 
+DETAIL_BASE = "https://ciena.wd5.myworkdayjobs.com/wday/cxs/ciena/Careers"
+PUBLIC_BASE = "https://ciena.wd5.myworkdayjobs.com/en-US/Careers"
+
+
+def fetch_ciena_detail(url):
+    """Given a posting's public URL, return (full_location_text, description)."""
+    external_path = url.replace(PUBLIC_BASE, "")    #turn the public URL back into the API path
+    headers = {"User-Agent": "Mozilla/5.0 (compatible; internship-scraper/0.1)",
+               "Accept": "application/json"}
+    response = requests.get(DETAIL_BASE + external_path, headers=headers, timeout=30)
+    response.raise_for_status()
+    info = response.json().get("jobPostingInfo", {})
+    
+    locations = [info.get("location", "")] + info.get("additionalLocations", [])
+    location_text = ", ".join(loc for loc in locations if loc)
+    description = info.get("jobDescription", "")
+    return location_text, description
+
 def fetch_ciena() -> list[Posting]:
     url = "https://ciena.wd5.myworkdayjobs.com/wday/cxs/ciena/Careers/jobs"
     # appears as user
@@ -19,7 +37,7 @@ def fetch_ciena() -> list[Posting]:
             break
         for job in page:
             external_path = job["externalPath"]
-            job_id = external_path.rsplit("_", 1)[-1]
+            job_id = external_path.rsplit("_", 1)[-1] # splits on the last underscore and takes the piece after it
             job_url = "https://ciena.wd5.myworkdayjobs.com/en-US/Careers" + external_path
             postings.append(Posting(
                 company="Ciena",
