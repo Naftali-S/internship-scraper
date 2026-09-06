@@ -68,3 +68,4 @@ Built in modules - see commit history.
 - [x] **Module 7:**  Config & registry
 - [x] **Module 8:**  GitHub Actions automation
 - [x] **Module 10:** Config-driven company registry
+- [x] **Module 11:** Lever platform scraper
