@@ -1,6 +1,7 @@
 from companies import COMPANIES 
 from workday import scrape_workday
 from lever import scrape_lever
+from ashby import scrape_ashby
 from database import get_connection, init_db, get_existing_keys, save_postings
 from notifier import send_digest
 
@@ -12,6 +13,8 @@ def scrape_company(company):
     # future: elif ats == "greenhouse": return scrape_greenhouse(...)
     if ats == "lever":
         return scrape_lever(company["name"], company["slug"])
+    if ats == "ashby":
+        return scrape_ashby(company["name"], company["slug"])
     raise ValueError(f"Unknown ATS '{ats}' for {company['name']}")
     
 def run():
