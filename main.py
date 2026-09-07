@@ -2,6 +2,8 @@ from companies import COMPANIES
 from workday import scrape_workday
 from lever import scrape_lever
 from ashby import scrape_ashby
+from smartrecruiters import scrape_smartrecruiters
+from workable import scrape_workable
 from database import get_connection, init_db, get_existing_keys, save_postings
 from notifier import send_digest
 
@@ -15,6 +17,10 @@ def scrape_company(company):
         return scrape_lever(company["name"], company["slug"])
     if ats == "ashby":
         return scrape_ashby(company["name"], company["slug"])
+    if ats == "smartrecruiters":
+        return scrape_smartrecruiters(company["name"], company["slug"])
+    if ats == "workable":
+        return scrape_workable(company["name"], company["account_id"])
     raise ValueError(f"Unknown ATS '{ats}' for {company['name']}")
     
 def run():
