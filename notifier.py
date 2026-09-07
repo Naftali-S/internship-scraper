@@ -60,7 +60,7 @@ def _posting_card(p):
     posted_row = f'<div style="font-size:12px;color:#9aa1ac;margin:2px 0;">Posted {html.escape(posted)}</div>' if posted else ""
     deadline_row = (
         f'<div style="display:inline-block;font-size:12px;font-weight:600;color:#b23b3b;'
-        f'background:#fdecec;border-radius:6px;padding:3px 9px;margin-top:8px;">&#9203; Apply by {html.escape(str(deadline))}</div>'
+        f'background:#fdecec;border-radius:6px;padding:3px 9px;margin-top:8px;">&#9203; Apply by {html.escape(_pretty_date(str(deadline)))}</div>'
         if deadline else ""
     )
     return f"""

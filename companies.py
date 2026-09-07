@@ -14,4 +14,6 @@ COMPANIES = [
     {"name": "ServiceNow", "ats": "smartrecruiters", "slug": "servicenow"},
     {"name": "Assent",     "ats": "smartrecruiters", "slug": "assent"},
     {"name": "Nuvei",      "ats": "workable",        "account_id": "378737"},
+    {"name": "Nokia",      "ats": "oracle", "pod": "fa-evmr-saasfaprod1.fa.ocs.oraclecloud.com", "site": "CX_1"},
+    {"name": "Oracle",     "ats": "oracle", "pod": "eeho.fa.us2.oraclecloud.com",                "site": "CX_45001"},
 ]

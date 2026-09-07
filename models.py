@@ -15,6 +15,7 @@ class Posting:
     job_id: str
     term: str | None = None
     posted_at: str | None = None
+    deadline: str | None = None
     scraped_at: str = field(default_factory=_now_iso)
     @property
     def unique_key(self) -> str:
