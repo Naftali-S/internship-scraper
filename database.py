@@ -39,12 +39,3 @@ def save_postings(conn, postings):
 def get_existing_keys(conn):
     rows = conn.execute("SELECT unique_key FROM postings").fetchall()
     return {row[0] for row in rows}
-
-if __name__ == "__main__":
-    from ciena import fetch_ciena
-    conn = get_connection()
-    init_db(conn)
-    postings = fetch_ciena()
-    new_count = save_postings(conn, postings)
-    total = conn.execute("SELECT COUNT(*) FROM postings").fetchone()[0]
-    print(f"Fetched {len(postings)}, newly saved {new_count}, total in DB {total}")
