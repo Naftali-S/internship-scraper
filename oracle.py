@@ -47,7 +47,12 @@ def scrape_oracle(company, pod, site):
             if not is_internship(title):
                 continue
 
-            if not mentions_term(title):  # term match on title only (see workday.py)
+            # Title is authoritative; fall back to the list's description fields
+            # when the title doesn't name a term (see filters.mentions_term).
+            description = " ".join(str(req.get(f, "") or "") for f in
+                                   ("ShortDescriptionStr", "ExternalQualificationsStr",
+                                    "ExternalResponsibilitiesStr"))
+            if not mentions_term(title, description):
                 continue
 
             secondary = ", ".join(

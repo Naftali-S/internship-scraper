@@ -69,7 +69,7 @@ def scrape_smartrecruiters(company, slug):
         except requests.RequestException:
             pass  # if detail fails, we still term-match on the title
 
-        if mentions_term(title):  # title-only term match (see workday.py)
+        if mentions_term(title, description):  # title authoritative, desc fallback
             result.append(Posting(
                 company=company,
                 title=title,

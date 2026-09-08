@@ -34,7 +34,8 @@ def scrape_workable(company, account_id):
         if loc.get("telecommuting"):
             location += " (Remote)"
 
-        if is_target_location(location) and mentions_term(title):  # title-only term match
+        description = job.get("description", "") or ""
+        if is_target_location(location) and mentions_term(title, description):
             result.append(Posting(
                 company=company,
                 title=title,
