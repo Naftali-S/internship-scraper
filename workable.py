@@ -1,7 +1,5 @@
 """Workable scraper (public account widget API).
 
-    GET https://www.workable.com/api/accounts/{account_id}?details=true
-
 Returns a `jobs` array with title, structured location, url, and (with
 details=true) a description. Unlocks: Nuvei (account_id '378737').
 """

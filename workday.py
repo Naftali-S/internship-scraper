@@ -40,8 +40,8 @@ def scrape_workday(company, tenant, data_center, site):
         if ambiguous or is_target_location(list_loc):
             candidates.append(p)
 
-    # Detail fetches are pure network waiting, so run them concurrently instead
-    # of one-at-a-time. This is what collapses the run from ~28 min to minutes.
+    
+    
     def enrich(p):
         try:
             location_text, description = _fetch_detail(cxs_base, public_base, p.url)

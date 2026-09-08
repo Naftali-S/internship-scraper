@@ -1,7 +1,5 @@
 """SmartRecruiters scraper (public REST API).
 
-    GET https://api.smartrecruiters.com/v1/companies/{slug}/postings?limit=100&offset=N
-
 The list gives title + structured location but NOT the description, so (like
 Workday) we fetch each intern's detail for the description to term-match on.
 Unlocks: ServiceNow (slug 'servicenow'), Assent (slug 'assent').

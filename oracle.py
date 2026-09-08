@@ -1,10 +1,5 @@
 """Oracle Recruiting Cloud scraper (public candidate-experience REST API).
 
-    GET https://{pod}/hcmRestApi/resources/latest/recruitingCEJobRequisitions
-        ?onlyData=true
-        &expand=requisitionList.secondaryLocations,flexFieldsFacet.values
-        &finder=findReqs;keyword=<kw>,siteNumber=<site>,limit=<n>,offset=<n>,sortBy=POSTING_DATES_DESC
-
 The list response already contains the description text AND the application
 deadline (PostingEndDate), so no per-job detail fetch is needed.
 
