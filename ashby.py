@@ -24,9 +24,7 @@ def scrape_ashby(company, slug):
             parts.append(s if isinstance(s, str) else s.get("location", ""))
         location = ", ".join(p for p in parts if p)
 
-        description = job.get("descriptionPlain", "") or ""
-        haystack = title + " " + description
-        if is_target_location(location) and mentions_term(haystack):
+        if is_target_location(location) and mentions_term(title):  # title-only term match
             result.append(Posting(
                 company=company,
                 title=title,

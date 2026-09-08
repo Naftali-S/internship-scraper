@@ -18,9 +18,7 @@ def scrape_lever(company, slug):
         if not is_internship(title):
             continue
         location = job.get("categories", {}).get("location", "") or ""
-        description = job.get("descriptionPlain", "") or ""
-        haystack = title + " " + description
-        if is_target_location(location) and mentions_term(haystack):
+        if is_target_location(location) and mentions_term(title):  # title-only term match
             result.append(Posting(
                 company=company,
                 title=title,

@@ -29,10 +29,6 @@ LOCATION_KEYWORDS = ("Ottawa", "Kanata")
 PAGE_SIZE = 100
 MAX_LIST_PAGES = 5
 
-# Description-bearing fields present in the list response (used for term match).
-_TEXT_FIELDS = ("Title", "ShortDescriptionStr",
-                "ExternalQualificationsStr", "ExternalResponsibilitiesStr")
-
 
 def scrape_oracle(company, pod, site):
     base = f"https://{pod}/hcmRestApi/resources/latest/recruitingCEJobRequisitions"
@@ -51,8 +47,7 @@ def scrape_oracle(company, pod, site):
             if not is_internship(title):
                 continue
 
-            haystack = " ".join(str(req.get(f, "") or "") for f in _TEXT_FIELDS)
-            if not mentions_term(haystack):
+            if not mentions_term(title):  # term match on title only (see workday.py)
                 continue
 
             secondary = ", ".join(

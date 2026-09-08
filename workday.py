@@ -53,8 +53,10 @@ def scrape_workday(company, tenant, data_center, site):
     result = []
     with ThreadPoolExecutor(max_workers=8) as pool:
         for p, description in pool.map(enrich, candidates):
-            haystack = p.title + " " + description
-            if is_target_location(p.location) and mentions_term(haystack):
+            # Term match on the TITLE only: descriptions often list every term
+            # the employer offers, so a Jan/Sept posting whose body mentions
+            # "summer" would falsely match. The title states this role's term.
+            if is_target_location(p.location) and mentions_term(p.title):
                 result.append(p)
     return result
 
