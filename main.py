@@ -5,6 +5,7 @@ from ashby import scrape_ashby
 from smartrecruiters import scrape_smartrecruiters
 from workable import scrape_workable
 from oracle import scrape_oracle
+from eightfold import scrape_eightfold
 from database import get_connection, init_db, get_existing_keys, save_postings
 from notifier import send_digest
 
@@ -24,6 +25,8 @@ def scrape_company(company):
         return scrape_workable(company["name"], company["account_id"])
     if ats == "oracle":
         return scrape_oracle(company["name"], company["pod"], company["site"])
+    if ats == "eightfold":
+        return scrape_eightfold(company["name"], company["host"], company["domain"])
     raise ValueError(f"Unknown ATS '{ats}' for {company['name']}")
     
 def run():

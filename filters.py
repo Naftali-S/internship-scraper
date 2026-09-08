@@ -13,6 +13,7 @@ TERM_KEYWORDS = [
     "may - august", "may - september",
     "may-aug", "may-sep",
 ]
+
 def is_internship(title):
     text = title.lower()
     return any(keyword in text for keyword in INTERN_KEYWORDS)
