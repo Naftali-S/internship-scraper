@@ -1,13 +1,9 @@
 # HTTP requests to career pages / hidden JSON APIs
 requests
 
-# Parse static HTML (Module 1)
-beautifulsoup4
-lxml
-
 # Load email credentials from a local .env file during development
 python-dotenv
 
-# NOTE: SQLite, smtplib (email), and json are part of Python's standard
-# library, so they don't appear here. I'll pin exact versions later
-# (Module 8) with `pip freeze` for reproducible CI builds.
+# NOTE: everything else the tool uses is in Python's standard library and
+# doesn't belong here — sqlite3 (storage), smtplib/email (mail), json, re,
+# html, datetime, concurrent.futures.
