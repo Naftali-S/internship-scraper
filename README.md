@@ -11,16 +11,16 @@ only the new ones**. It runs automatically and for free on **GitHub Actions**.
 
 ## Companies tracked
 
-**19 companies across 7 hiring platforms.** Each company is one row of config in
+**25 companies across 7 hiring platforms.** Each company is one row of config in
 [`companies.py`](companies.py); a shared scraper handles every company on the
 same platform.
 
 | Platform | Scraper | Companies |
 |---|---|---|
-| Workday | [`workday.py`](workday.py) | Ciena, BlackBerry, TD, CIBC, Mitel, Accenture, BDO, PwC, Thales |
+| Workday | [`workday.py`](workday.py) | Ciena, BlackBerry, TD, CIBC, Mitel, Accenture, BDO, PwC, Thales, Lumentum, Cisco, CAE, Trend Micro |
 | Oracle Recruiting Cloud | [`oracle.py`](oracle.py) | Nokia, Oracle |
 | Eightfold | [`eightfold.py`](eightfold.py) | Ericsson, Lockheed Martin |
-| SmartRecruiters | [`smartrecruiters.py`](smartrecruiters.py) | ServiceNow, Assent |
+| SmartRecruiters | [`smartrecruiters.py`](smartrecruiters.py) | ServiceNow, Assent, Deloitte |
 | Ashby | [`ashby.py`](ashby.py) | Solace, Rewind |
 | Lever | [`lever.py`](lever.py) | Fullscript |
 | Workable | [`workable.py`](workable.py) | Nuvei |
@@ -58,7 +58,7 @@ inbox, so the term match is deliberately careful:
   "May 2027"), that decides it. A title that names a *different* term ("January
   … Co-op", "Fall 2027") is dropped even if its description mentions summer
   elsewhere.
-- When the title is **silent**, the **description decides** — including the
+- When the title is **silent**, the **description decides**  including the
   **start date**: a May/June start reads as summer, a January/September start as
   winter/fall.
 - No term anywhere → dropped.
@@ -127,5 +127,5 @@ Built incrementally, see commit history for the full story. Highlights:
 - Gmail notifications, upgraded to a **magazine-style HTML digest**
 - Config-driven company registry + platform dispatcher
 - Platform scrapers: Workday, Lever, Ashby, SmartRecruiters, Workable, Oracle,
-  Eightfold — each with server-side prefiltering and bounded pagination
+  Eightfold each with server-side prefiltering and bounded pagination
 - Daily automation on GitHub Actions with database persistence
