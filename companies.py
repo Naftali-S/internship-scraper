@@ -6,6 +6,7 @@ COMPANIES = [
     {"name": "Fullscript", "ats": "lever", "slug": "fullscript"},
     {"name": "Solace", "ats": "ashby", "slug": "solace"},
     {"name": "Rewind", "ats": "ashby", "slug": "rewind"},
+    {"name": "Cohere", "ats": "ashby", "slug": "cohere"},
     {"name": "Mitel", "ats": "workday", "tenant": "mitel", "dc": "wd3", "site": "mitelcareers"},
     {"name": "Accenture", "ats": "workday", "tenant": "accenture", "dc": "wd103", "site": "accenturecareers"},
     {"name": "BDO", "ats": "workday", "tenant": "bdo", "dc": "wd3", "site": "BDO"},
@@ -18,4 +19,9 @@ COMPANIES = [
     {"name": "Oracle",     "ats": "oracle", "pod": "eeho.fa.us2.oraclecloud.com",                "site": "CX_45001"},
     {"name": "Ericsson",   "ats": "eightfold", "host": "jobs.ericsson.com",             "domain": "ericsson.com"},
     {"name": "Lockheed Martin", "ats": "eightfold", "host": "lockheedmartin.eightfold.ai", "domain": "lockheedmartin.com"},
+    {"name": "Lumentum",   "ats": "workday", "tenant": "lumentum",   "dc": "wd5", "site": "LITE"},
+    {"name": "Cisco",      "ats": "workday", "tenant": "cisco",      "dc": "wd5", "site": "Cisco_Careers"},
+    {"name": "CAE",        "ats": "workday", "tenant": "cae",        "dc": "wd3", "site": "career"},
+    {"name": "Trend Micro","ats": "workday", "tenant": "trendmicro", "dc": "wd3", "site": "External"},
+    {"name": "Deloitte",   "ats": "smartrecruiters", "slug": "Deloitte6"},
 ]
