@@ -94,7 +94,7 @@ def _get_with_retry(url, retries=2):
     import time
     for attempt in range(retries):
         try:
-            response = requests.get(url, headers=HEADERS, timeout=15)
+            response = requests.get(url, headers=HEADERS, timeout=30)
             response.raise_for_status()
             return response
         except requests.RequestException:
