@@ -19,6 +19,7 @@ import re
 from datetime import datetime, timezone
 import requests
 
+import fetch
 from models import Posting
 from filters import is_internship, is_target_location, mentions_term
 
@@ -86,7 +87,7 @@ def _fetch_positions(base, domain, headers):
     for _ in range(MAX_LIST_PAGES):
         params = {"domain": domain, "location": LOCATION_QUERY,
                   "start": start, "num": PAGE_SIZE}
-        response = _get_with_retry(base, params, headers)
+        response = fetch.get(base, params=params, headers=headers)
         data = response.json().get("data", {})
         page = data.get("positions", [])
         if not page:
@@ -99,18 +100,6 @@ def _fetch_positions(base, domain, headers):
     return positions
 
 
-def _get_with_retry(url, params, headers, retries=2):
-    for attempt in range(retries):
-        try:
-            response = requests.get(url, params=params, headers=headers, timeout=15)
-            response.raise_for_status()
-            return response
-        except requests.RequestException:
-            if attempt == retries - 1:
-                raise
-            time.sleep(2 ** attempt)
-
-
 def _fetch_jobposting(url, headers):
     """Pull the schema.org JobPosting JSON-LD off a job page.
 
@@ -119,8 +108,7 @@ def _fetch_jobposting(url, headers):
     back to a title-only term match).
     """
     try:
-        response = requests.get(url, headers=headers, timeout=15)
-        response.raise_for_status()
+        response = fetch.get(url, headers=headers, timeout=15)
     except requests.RequestException:
         return {}
     for block in _JSONLD_RE.findall(response.text):

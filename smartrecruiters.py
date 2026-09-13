@@ -8,13 +8,9 @@ Unlocks: ServiceNow (slug 'servicenow'), Assent (slug 'assent').
 import time
 import requests
 
+import fetch
 from models import Posting
 from filters import is_internship, is_target_location, mentions_term
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; internship-scraper/0.1)",
-    "Accept": "application/json",
-}
 
 
 def scrape_smartrecruiters(company, slug):
@@ -24,9 +20,7 @@ def scrape_smartrecruiters(company, slug):
     raw = []
     offset = 0
     while True:
-        resp = requests.get(base, headers=HEADERS,
-                            params={"limit": 100, "offset": offset}, timeout=30)
-        resp.raise_for_status()
+        resp = fetch.get(base, params={"limit": 100, "offset": offset}, timeout=30)
         data = resp.json()
         content = data.get("content", [])
         if not content:
@@ -56,14 +50,13 @@ def scrape_smartrecruiters(company, slug):
         url = f"https://jobs.smartrecruiters.com/{slug}/{job_id}"
         description = ""
         try:
-            d = requests.get(f"{base}/{job_id}", headers=HEADERS, timeout=30)
-            if d.status_code == 200:
-                dj = d.json()
-                url = dj.get("applyUrl") or dj.get("postingUrl") or url
-                sections = dj.get("jobAd", {}).get("sections", {})
-                description = " ".join(
-                    sec.get("text", "") for sec in sections.values() if isinstance(sec, dict)
-                )
+            d = fetch.get(f"{base}/{job_id}", timeout=30)
+            dj = d.json()
+            url = dj.get("applyUrl") or dj.get("postingUrl") or url
+            sections = dj.get("jobAd", {}).get("sections", {})
+            description = " ".join(
+                sec.get("text", "") for sec in sections.values() if isinstance(sec, dict)
+            )
         except requests.RequestException:
             pass  # if detail fails, we still term-match on the title
 

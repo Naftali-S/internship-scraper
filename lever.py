@@ -1,17 +1,12 @@
-import requests
+import fetch
 from models import Posting
 from filters import is_internship, is_target_location, mentions_term
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; internship-scraper/0.1)",
-    "Accept": "application/json"}
-
 def scrape_lever(company, slug):
     url = f"https://api.lever.co/v0/postings/{slug}?mode=json"
-    response = requests.get(url, headers=HEADERS, timeout=30)
-    response.raise_for_status()
+    response = fetch.get(url, timeout=30)
     jobs = response.json()  #a list of posting discts
-    
+
     result = []
     for job in jobs:
         title = job.get("text", "")

@@ -9,14 +9,9 @@ keywords), because the returned PrimaryLocation is often only country-level
 search avoids wrongly rejecting those. Unlocks: Oracle, Nokia.
 """
 
-import requests
+import fetch
 from models import Posting
 from filters import is_internship, mentions_term
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; internship-scraper/0.1)",
-    "Accept": "application/json",
-}
 
 # Server-side location filter (Oracle keyword search). Narrow city terms keep
 # each query tiny, so a small page cap is plenty of headroom.
@@ -78,7 +73,7 @@ def _fetch_reqs(base, site, keyword):
         url = (f"{base}?onlyData=true"
                f"&expand=requisitionList.secondaryLocations,flexFieldsFacet.values"
                f"&finder={finder}")
-        response = _get_with_retry(url)
+        response = fetch.get(url, timeout=30)
         items = response.json().get("items", [])
         page = items[0].get("requisitionList", []) if items else []
         if not page:
@@ -88,16 +83,3 @@ def _fetch_reqs(base, site, keyword):
             break
         offset += PAGE_SIZE
     return reqs
-
-
-def _get_with_retry(url, retries=2):
-    import time
-    for attempt in range(retries):
-        try:
-            response = requests.get(url, headers=HEADERS, timeout=30)
-            response.raise_for_status()
-            return response
-        except requests.RequestException:
-            if attempt == retries - 1:
-                raise
-            time.sleep(2 ** attempt)

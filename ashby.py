@@ -1,15 +1,11 @@
-import requests
+import fetch
 from models import Posting
 from filters import is_internship, is_target_location, mentions_term
-
-HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; internship-scraper/0.1)",
-           "Accept": "application/json"}
 
 
 def scrape_ashby(company, slug):
     url = f"https://api.ashbyhq.com/posting-api/job-board/{slug}?includeCompensation=false"
-    response = requests.get(url, headers=HEADERS, timeout=30)
-    response.raise_for_status()
+    response = fetch.get(url, timeout=30)
     jobs = response.json().get("jobs", [])
 
     result = []

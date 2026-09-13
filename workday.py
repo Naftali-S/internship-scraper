@@ -1,4 +1,5 @@
 import time
+import fetch
 from concurrent.futures import ThreadPoolExecutor
 import requests
 from models import Posting
@@ -59,23 +60,12 @@ def scrape_workday(company, tenant, data_center, site):
                 result.append(p)
     return result
 
-def _post_with_retry(url, body, retries=3):
-    for attempt in range(retries):
-        try: 
-            response = requests.post(url, headers=HEADERS, json=body, timeout=15)
-            response.raise_for_status()
-            return response
-        except requests.RequestException:
-            if attempt == retries - 1:  # last try
-                raise
-            time.sleep(2 ** attempt)    # exponential wait
-
 def _fetch_list(cxs_base, public_base, company, search_text):
     postings = []
     offset = 0
     for _ in range(MAX_LIST_PAGES):
         body = {"appliedFacets": {}, "limit": 20, "offset": offset, "searchText": search_text}
-        response = _post_with_retry(cxs_base + "/jobs", body)
+        response = fetch.post(cxs_base + "/jobs", json=body)
         page = response.json().get("jobPostings", [])
         if not page:
             break
@@ -97,20 +87,9 @@ def _fetch_list(cxs_base, public_base, company, search_text):
         time.sleep(0.3)
     return postings
 
-def _get_with_retry(url, retries=2):
-    for attempt in range(retries):
-        try:
-            response = requests.get(url, headers=HEADERS, timeout=15)
-            response.raise_for_status()
-            return response
-        except requests.RequestException:
-            if attempt == retries - 1:
-                raise
-            time.sleep(2 ** attempt)
-
 def _fetch_detail(cxs_base, public_base, url):
     external_path = url.replace(public_base, "")
-    response = _get_with_retry(cxs_base + external_path)
+    response = fetch.get(cxs_base + external_path)
     info = response.json().get("jobPostingInfo", {})
     locations = [info.get("location", "")] + info.get("additionalLocations", [])
     location_text = ", ".join(loc for loc in locations if loc)
