@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from companies import COMPANIES 
 from workday import scrape_workday
 from lever import scrape_lever
@@ -28,18 +29,30 @@ def scrape_company(company):
     if ats == "eightfold":
         return scrape_eightfold(company["name"], company["host"], company["domain"])
     raise ValueError(f"Unknown ATS '{ats}' for {company['name']}")
+
+def _scrape_safe(company):
+    try:
+        return scrape_company(company)
+    except Exception as e:
+        print(f" ! {company['name']} failed: {e}")
+        return []
     
 def run():
     conn = get_connection()
     init_db(conn)
     
     postings = []
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        results = pool.map(_scrape_safe, COMPANIES)
+        for company_postings in results:
+            postings.extend(company_postings)
+    """
     for company in COMPANIES:
         try:
             postings.extend(scrape_company(company)) #run each company's scraper and collect results
         except Exception as e:
             print(f"  ! {company['name']} failed: {e}") #one bad company won't kill the run
-        
+    """    
     existing = get_existing_keys(conn)    #what's been seen before
     new = [p for p in postings if p.unique_key not in existing] #keep each posting on if key isn't already existing
     

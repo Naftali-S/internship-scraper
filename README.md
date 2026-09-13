@@ -5,25 +5,25 @@ internship / co-op postings** (roughly May–September) located in **Ottawa,
 Kanata, or Canada-remote**, stores them in a local database, and **emails me
 only the new ones**. It runs automatically and for free on **GitHub Actions**.
 
-> This repo doubles as a learning log I'm building it to get hands-on
+> This repo doubles as a learning log. I'm building it to get hands-on
 > experience with web scraping, hidden JSON APIs, databases, diffing, email
 > automation, and CI.
 
 ## Companies tracked
 
-**25 companies across 7 hiring platforms.** Each company is one row of config in
+**40 companies across 7 hiring platforms.** Each company is one row of config in
 [`companies.py`](companies.py); a shared scraper handles every company on the
 same platform.
 
 | Platform | Scraper | Companies |
 |---|---|---|
-| Workday | [`workday.py`](workday.py) | Ciena, BlackBerry, TD, CIBC, Mitel, Accenture, BDO, PwC, Thales, Lumentum, Cisco, CAE, Trend Micro |
-| Oracle Recruiting Cloud | [`oracle.py`](oracle.py) | Nokia, Oracle |
+| Workday | [`workday.py`](workday.py) | Ciena, BlackBerry, TD, CIBC, Mitel, Accenture, BDO, PwC, Thales, Lumentum, Cisco, CAE, Trend Micro, Adobe, BMO, Manulife, Sun Life, Marvell, Entrust, Salesforce, RingCentral |
+| Oracle Recruiting Cloud | [`oracle.py`](oracle.py) | Nokia, Oracle, Fortinet, Ford |
 | Eightfold | [`eightfold.py`](eightfold.py) | Ericsson, Lockheed Martin |
-| SmartRecruiters | [`smartrecruiters.py`](smartrecruiters.py) | ServiceNow, Assent, Deloitte |
-| Ashby | [`ashby.py`](ashby.py) | Solace, Rewind |
-| Lever | [`lever.py`](lever.py) | Fullscript |
-| Workable | [`workable.py`](workable.py) | Nuvei |
+| SmartRecruiters | [`smartrecruiters.py`](smartrecruiters.py) | ServiceNow, Assent, Deloitte, ADGA Group |
+| Ashby | [`ashby.py`](ashby.py) | Solace, Rewind, Cohere, Dominion Dynamics |
+| Lever | [`lever.py`](lever.py) | Fullscript, FreeBalance |
+| Workable | [`workable.py`](workable.py) | Nuvei, Fidus Systems, Zone & Company |
 
 **Adding a company on an existing platform = one line in `companies.py`.** A new
 platform = one new scraper file plus a branch in `main.py`'s dispatcher.
@@ -37,7 +37,11 @@ scrapers  ->  filter (location + summer term)  ->  SQLite (diff vs. seen)  ->  e
 1. **Scrape** each company from its underlying JSON API (found via the browser
    Network tab) faster and more reliable than a headless browser. Every
    scraper filters at the source (location keyword / geo search) and caps its
-   pagination so a run stays fast and bounded.
+   pagination so a run stays fast and bounded. Companies are scraped
+   **concurrently** through a bounded thread pool, so a full pass costs about
+   as long as the single slowest company rather than the sum of all of them.
+   The work is network-bound, so threads (not processes) are the right fit; the
+   pool is deliberately small to stay well clear of per-site rate limits.
 2. **Filter** for internships in the target locations and the summer term (see
    below).
 3. **Diff** against the SQLite database and keep only postings never seen before.
@@ -58,7 +62,7 @@ inbox, so the term match is deliberately careful:
   "May 2027"), that decides it. A title that names a *different* term ("January
   … Co-op", "Fall 2027") is dropped even if its description mentions summer
   elsewhere.
-- When the title is **silent**, the **description decides**  including the
+- When the title is **silent**, the **description decides,** including the
   **start date**: a May/June start reads as summer, a January/September start as
   winter/fall.
 - No term anywhere → dropped.
@@ -71,7 +75,7 @@ fetches the job page's schema.org **JSON-LD** to read the body and start date.
 ```
 .
 ├── companies.py       # the registry: one dict per company, keyed by `ats`
-├── main.py            # dispatches each company to its platform scraper + runs a full pass
+├── main.py            # dispatches each company to its scraper; runs the pass concurrently
 ├── models.py          # the Posting data structure
 ├── filters.py         # location + summer-term matching
 ├── database.py        # SQLite storage + diffing
@@ -127,5 +131,6 @@ Built incrementally, see commit history for the full story. Highlights:
 - Gmail notifications, upgraded to a **magazine-style HTML digest**
 - Config-driven company registry + platform dispatcher
 - Platform scrapers: Workday, Lever, Ashby, SmartRecruiters, Workable, Oracle,
-  Eightfold each with server-side prefiltering and bounded pagination
+  Eightfold, each with server-side prefiltering and bounded pagination
 - Daily automation on GitHub Actions with database persistence
+- Bounded concurrent scraping across companies (thread pool): a full pass is about the slowest single company, not the sum of all of them
