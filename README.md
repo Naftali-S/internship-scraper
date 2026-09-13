@@ -78,7 +78,9 @@ fetches the job page's schema.org **JSON-LD** to read the body and start date.
 ├── main.py            # dispatches each company to its scraper; runs the pass concurrently
 ├── models.py          # the Posting data structure
 ├── filters.py         # location + summer-term matching
-├── database.py        # SQLite storage + diffing
+├── fetch.py           # shared HTTP GET/POST with retry + backoff, used by every scraper
+├── health.py          # breakage detection: flags scraper errors and unexpected zero-drops
+├── database.py        # SQLite storage + diffing + per-run history (scrape_runs)
 ├── notifier.py        # styled HTML email digest (Gmail)
 ├── workday.py         # per-platform scrapers ...
 ├── oracle.py
@@ -133,4 +135,5 @@ Built incrementally, see commit history for the full story. Highlights:
 - Platform scrapers: Workday, Lever, Ashby, SmartRecruiters, Workable, Oracle,
   Eightfold, each with server-side prefiltering and bounded pagination
 - Daily automation on GitHub Actions with database persistence
+- Reliability: one shared retry/backoff HTTP helper across all scrapers, plus silent-breakage detection that emails an alert on a thrown error or a company dropping to zero against a positive baseline
 - Bounded concurrent scraping across companies (thread pool): a full pass is about the slowest single company, not the sum of all of them

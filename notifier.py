@@ -11,8 +11,13 @@ EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
 EMAIL_APP_PASSWORD = os.getenv("EMAIL_APP_PASSWORD")
 EMAIL_TO = os.getenv("EMAIL_TO")
 
-def format_body(postings):
+def format_body(postings, flags=()):
     lines = [f"{len(postings)} new internship posting(s):", ""]
+    if flags:
+        lines.append("HEALTH ALERTS:")
+        lines += [f"- {f}" for f in flags]
+        lines.append("")
+    lines += [f"{len(postings)} new internship posting(s):", ""]
     for p in postings:
         lines.append(f"- {p.title}")
         lines.append(f"  {p.location}")
@@ -20,24 +25,33 @@ def format_body(postings):
         lines.append("")
     return "\n".join(lines)
 
-def send_digest(postings):
-    if not postings:
-        print("No new postings. Skipping email")
+def send_digest(postings, flags=()):
+    if not postings and not flags:
+        print("No new postings, no health flags. Skipping email.")
         return
-    
+
+    if postings:
+        subject = f"[Internships] {len(postings)} new posting(s)"
+        html = format_html(postings, flags)          # digest, with a banner if flags
+        text = format_body(postings, flags)
+    else:
+        subject = "[Internships] scraper health alert"
+        html = None                                  # plain text is enough for an alert
+        text = "Scraper health alert:\n\n" + "\n".join(f"- {f}" for f in flags)
+
     msg = EmailMessage()
-    msg["Subject"] = f"[Internships] {len(postings)} new posting(s)"
+    msg["Subject"] = subject
     msg["From"] = EMAIL_ADDRESS
     msg["To"] = EMAIL_TO
-    msg.set_content(format_body(postings))  # fallback
-    msg.add_alternative(format_html(postings), subtype="html")   # the pretty version
-    
+    msg.set_content(text)
+    if html:
+        msg.add_alternative(html, subtype="html")
+
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(EMAIL_ADDRESS, EMAIL_APP_PASSWORD)
         server.send_message(msg)
-    
-    print(f"Emailed {len(postings)} posting(s) to {EMAIL_TO}")
-    
+
+    print(f"Emailed: {subject} -> {EMAIL_TO}")
 def _pretty_date(value):
     """ISO timestamp -> 'Sep 07, 2026'. Non-ISO strings pass through unchanged."""
     if not value:
@@ -75,12 +89,22 @@ def _posting_card(p):
         </div>"""
 
 
-def format_html(postings):
+def format_html(postings, flags=()):
     # Group by company, preserving the order companies first appear.
     groups = {}
     for p in postings:
         groups.setdefault(p.company, []).append(p)
 
+    banner = ""
+    if flags:
+        items = "".join(f"<li>{html.escape(f)}</li>" for f in flags)
+        banner = (
+            '<div style="background:#fdecec;border:1px solid #f0c2c2;border-radius:10px;'
+            'padding:14px 18px;margin:0 0 16px 0;color:#b23b3b;font-size:13px;">'
+            '<strong>Scraper health alerts</strong>'
+            f'<ul style="margin:8px 0 0 18px;padding:0;">{items}</ul></div>'
+        )
+    
     sections = ""
     for company, items in groups.items():
         cards = "".join(_posting_card(p) for p in items)

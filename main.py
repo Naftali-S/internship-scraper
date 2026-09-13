@@ -7,8 +7,9 @@ from smartrecruiters import scrape_smartrecruiters
 from workable import scrape_workable
 from oracle import scrape_oracle
 from eightfold import scrape_eightfold
-from database import get_connection, init_db, get_existing_keys, save_postings
+from database import get_connection, init_db, get_existing_keys, save_postings, record_runs, recent_counts
 from notifier import send_digest
+import health
 
 def scrape_company(company):
     """Route a company entry to the right platform scraper."""
@@ -31,35 +32,41 @@ def scrape_company(company):
     raise ValueError(f"Unknown ATS '{ats}' for {company['name']}")
 
 def _scrape_safe(company):
+    name = company["name"]
     try:
-        return scrape_company(company)
+        postings = scrape_company(company)
+        return (name, postings, "ok", None)
     except Exception as e:
-        print(f" ! {company['name']} failed: {e}")
-        return []
+        print(f" ! {name} failed: {e}")
+        return (name, [], "error", str(e))
     
 def run():
     conn = get_connection()
     init_db(conn)
-    
-    postings = []
+
     with ThreadPoolExecutor(max_workers=6) as pool:
-        results = pool.map(_scrape_safe, COMPANIES)
-        for company_postings in results:
-            postings.extend(company_postings)
-    """
-    for company in COMPANIES:
-        try:
-            postings.extend(scrape_company(company)) #run each company's scraper and collect results
-        except Exception as e:
-            print(f"  ! {company['name']} failed: {e}") #one bad company won't kill the run
-    """    
-    existing = get_existing_keys(conn)    #what's been seen before
-    new = [p for p in postings if p.unique_key not in existing] #keep each posting on if key isn't already existing
-    
-    send_digest(new)                #send email
-    save_postings(conn, new)        #remember the new ones
-    
+        outcomes = list(pool.map(_scrape_safe, COMPANIES))
+
+    postings = []
+    for name, company_postings, status, error in outcomes:
+        postings.extend(company_postings)
+
+    # Read each company's baseline BEFORE recording this run, so the baseline
+    # reflects prior runs only, then flag, then record this run.
+    baselines = {name: recent_counts(conn, name, limit=health.WINDOW)
+                 for name, _, _, _ in outcomes}
+    flags = health.evaluate(outcomes, baselines)
+    record_runs(conn, outcomes)
+
+    existing = get_existing_keys(conn)
+    new = [p for p in postings if p.unique_key not in existing]
+
+    send_digest(new, flags)
+    save_postings(conn, new)
+
     print(f"Scanned {len(COMPANIES)} companies, kept {len(postings)} relevant, {len(new)} new")
+    for f in flags:
+        print(f"  HEALTH: {f}")
     for p in new[:20]:
         print(f"  NEW: {p.company} | {p.title} | {p.location}")
 
