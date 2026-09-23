@@ -24,10 +24,28 @@ OTHER_TERM_KEYWORDS = [
 ]
 
 # A May/June START date implies a summer term even when the word "summer" is
-# absent (e.g. "Start date: May 4th, 2027"). The trailing digit distinguishes
-# the month from the verb "may" ("may be required"), and anchoring to "start"
-# avoids matching an unrelated May deadline. Winter/Fall start months are
+# absent (e.g. "Start date: May 4th, 2027"). Winter/Fall start months are
 # already handled by OTHER_TERM_KEYWORDS (january, september, ...).
+#
+# How the pattern reads, left to right (text is already lowercased):
+#   start\w*            "start" plus any letters after it: start, starts, starting
+#   [^.\n]{0,20}        up to 20 characters that aren't a period or line break,
+#                       so the date has to be in the same sentence: " date: "
+#   \b(?:may|june)\b    the whole word "may" or "june" (\b = word boundary, so
+#                       "mayor" or "dismay" don't count)
+#   [.,\s]+\d           then spaces/punctuation and a digit: " 4", ", 2027"
+#
+# Why each part is there:
+#   - the digit at the end separates the month from the verb "may"
+#     ("you may be required" has no number after it)
+#   - "start" at the front skips unrelated May dates ("apply by May 1")
+#   - the same-sentence window stops a "start" in one sentence from pairing
+#     with a "May" somewhere else
+#
+# Matches:        "start date: may 4th, 2027", "starting june 1, 2027",
+#                 "anticipated start: may 2027"
+# Doesn't match:  "you may start soon", "apply by may 1",
+#                 "start date: january 4, 2027"
 _SUMMER_START = re.compile(r"start\w*[^.\n]{0,20}\b(?:may|june)\b[.,\s]+\d")
 
 

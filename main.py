@@ -7,6 +7,10 @@ from smartrecruiters import scrape_smartrecruiters
 from workable import scrape_workable
 from oracle import scrape_oracle
 from eightfold import scrape_eightfold
+from bamboohr import scrape_bamboohr
+from dayforce import scrape_dayforce
+from successfactors import scrape_successfactors
+from jibe import scrape_jibe
 from database import get_connection, init_db, get_existing_keys, save_postings, record_runs, recent_counts
 from notifier import send_digest
 import health
@@ -29,6 +33,14 @@ def scrape_company(company):
         return scrape_oracle(company["name"], company["pod"], company["site"])
     if ats == "eightfold":
         return scrape_eightfold(company["name"], company["host"], company["domain"])
+    if ats == "bamboohr":
+        return scrape_bamboohr(company["name"], company["subdomain"])
+    if ats == "dayforce":
+        return scrape_dayforce(company["name"], company["client"])
+    if ats == "successfactors":
+        return scrape_successfactors(company["name"], company["host"])
+    if ats == "jibe":
+        return scrape_jibe(company["name"], company["host"])
     raise ValueError(f"Unknown ATS '{ats}' for {company['name']}")
 
 def _scrape_safe(company):

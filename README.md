@@ -11,7 +11,7 @@ only the new ones**. It runs automatically and for free on **GitHub Actions**.
 
 ## Companies tracked
 
-**40 companies across 7 hiring platforms.** Each company is one row of config in
+**52 companies across 11 hiring platforms.** Each company is one row of config in
 [`companies.py`](companies.py); a shared scraper handles every company on the
 same platform.
 
@@ -24,6 +24,10 @@ same platform.
 | Ashby | [`ashby.py`](ashby.py) | Solace, Rewind, Cohere, Dominion Dynamics |
 | Lever | [`lever.py`](lever.py) | Fullscript, FreeBalance |
 | Workable | [`workable.py`](workable.py) | Nuvei, Fidus Systems, Zone & Company |
+| BambooHR | [`bamboohr.py`](bamboohr.py) | Giatec Scientific, CIRA, Enghouse |
+| Dayforce | [`dayforce.py`](dayforce.py) | Ross Video, Payments Canada, MindBridge, Field Effect |
+| SAP SuccessFactors | [`successfactors.py`](successfactors.py) | Scotiabank, EY, Leonardo DRS, SAP |
+| Jibe (iCIMS) | [`jibe.py`](jibe.py) | KPMG |
 
 **Adding a company on an existing platform = one line in `companies.py`.** A new
 platform = one new scraper file plus a branch in `main.py`'s dispatcher.
@@ -35,7 +39,8 @@ scrapers  ->  filter (location + summer term)  ->  SQLite (diff vs. seen)  ->  e
 ```
 
 1. **Scrape** each company from its underlying JSON API (found via the browser
-   Network tab) faster and more reliable than a headless browser. Every
+   Network tab), or its plain search results page where there is no usable API
+   (SuccessFactors). Both are faster and more reliable than a headless browser. Every
    scraper filters at the source (location keyword / geo search) and caps its
    pagination so a run stays fast and bounded. Companies are scraped
    **concurrently** through a bounded thread pool, so a full pass costs about
@@ -67,8 +72,17 @@ inbox, so the term match is deliberately careful:
   winter/fall.
 - No term anywhere → dropped.
 
-Eightfold's search API carries no description, so for those postings the scraper
-fetches the job page's schema.org **JSON-LD** to read the body and start date.
+### Platform quirks
+
+- **Eightfold**: the search API carries no description, so the scraper fetches
+  the job page's schema.org **JSON-LD** to read the body and start date.
+- **Dayforce**: the job search only answers with a **CSRF token**, so the scraper
+  first gets one (plus its cookie) from `/api/auth/csrf`.
+- **SuccessFactors**: the RSS feed stops at 20 jobs, so the scraper reads the
+  search results page instead, and searches **Ottawa and Kanata separately**
+  because some sites match the location exactly rather than by distance.
+- **BambooHR, Dayforce, SuccessFactors**: turn away non-browser User-Agents, so
+  those scrapers send a browser one.
 
 ## Project layout
 
@@ -89,6 +103,10 @@ fetches the job page's schema.org **JSON-LD** to read the body and start date.
 ├── ashby.py
 ├── lever.py
 ├── workable.py
+├── bamboohr.py
+├── dayforce.py
+├── successfactors.py
+├── jibe.py
 ├── data/              # local SQLite database (committed so CI runs persist state)
 ├── requirements.txt
 └── .github/workflows/ # scheduled daily automation
@@ -133,7 +151,8 @@ Built incrementally, see commit history for the full story. Highlights:
 - Gmail notifications, upgraded to a **magazine-style HTML digest**
 - Config-driven company registry + platform dispatcher
 - Platform scrapers: Workday, Lever, Ashby, SmartRecruiters, Workable, Oracle,
-  Eightfold, each with server-side prefiltering and bounded pagination
+  Eightfold, BambooHR, Dayforce, SuccessFactors, and Jibe, each with server-side
+  prefiltering and bounded pagination
 - Daily automation on GitHub Actions with database persistence
 - Reliability: one shared retry/backoff HTTP helper across all scrapers, plus silent-breakage detection that emails an alert on a thrown error or a company dropping to zero against a positive baseline
 - Bounded concurrent scraping across companies (thread pool): a full pass is about the slowest single company, not the sum of all of them
