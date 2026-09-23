@@ -133,7 +133,7 @@ The email requires a Gmail **app password** (not your account password) in
 ## Automation
 
 [`.github/workflows/scrape.yml`](.github/workflows/scrape.yml) runs a full pass
-on a daily cron (and on manual dispatch), then commits the updated database back
+twice a day, at about 9am and 5pm Ottawa time (and on manual dispatch), then commits the updated database back
 to the repo so the next run remembers what it has already emailed. Because the
 cloud job writes `data/postings.db`, pull with rebase before pushing local work:
 

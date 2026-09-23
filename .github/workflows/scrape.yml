@@ -2,7 +2,7 @@ name: Scrape internships
 
 on:
   schedule:
-    - cron: "0 13 * * *"     # daily at 13:00 UTC (~9am Ottawa time)
+    - cron: "0 13,21 * * *"  # twice daily at 13:00 and 21:00 UTC (~9am and ~5pm Ottawa time)
   workflow_dispatch:          # also lets you run it manually from the Actions tab
 
 permissions:
