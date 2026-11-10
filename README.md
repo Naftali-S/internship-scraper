@@ -11,22 +11,22 @@ only the new ones**. It runs automatically and for free on **GitHub Actions**.
 
 ## Companies tracked
 
-**52 companies across 11 hiring platforms.** Each company is one row of config in
+**66 companies across 11 hiring platforms.** Each company is one row of config in
 [`companies.py`](companies.py); a shared scraper handles every company on the
 same platform.
 
 | Platform | Scraper | Companies |
 |---|---|---|
-| Workday | [`workday.py`](workday.py) | Ciena, BlackBerry, TD, CIBC, Mitel, Accenture, BDO, PwC, Thales, Lumentum, Cisco, CAE, Trend Micro, Adobe, BMO, Manulife, Sun Life, Marvell, Entrust, Salesforce, RingCentral |
+| Workday | [`workday.py`](workday.py) | Ciena, BlackBerry, TD, CIBC, Mitel, Accenture, BDO, PwC, Thales, Lumentum, Cisco, CAE, Trend Micro, Adobe, BMO, Manulife, Sun Life, Marvell, Entrust, Salesforce, RingCentral, NAV CANADA, Curtiss-Wright, Giant Tiger |
 | Oracle Recruiting Cloud | [`oracle.py`](oracle.py) | Nokia, Oracle, Fortinet, Ford |
 | Eightfold | [`eightfold.py`](eightfold.py) | Ericsson, Lockheed Martin |
 | SmartRecruiters | [`smartrecruiters.py`](smartrecruiters.py) | ServiceNow, Assent, Deloitte, ADGA Group |
 | Ashby | [`ashby.py`](ashby.py) | Solace, Rewind, Cohere, Dominion Dynamics |
-| Lever | [`lever.py`](lever.py) | Fullscript, FreeBalance |
-| Workable | [`workable.py`](workable.py) | Nuvei, Fidus Systems, Zone & Company |
+| Lever | [`lever.py`](lever.py) | Fullscript, FreeBalance, Magnet Forensics |
+| Workable | [`workable.py`](workable.py) | Nuvei, Fidus Systems, Zone & Company, Export Development Canada, March Networks |
 | BambooHR | [`bamboohr.py`](bamboohr.py) | Giatec Scientific, CIRA, Enghouse |
 | Dayforce | [`dayforce.py`](dayforce.py) | Ross Video, Payments Canada, MindBridge, Field Effect |
-| SAP SuccessFactors | [`successfactors.py`](successfactors.py) | Scotiabank, EY, Leonardo DRS, SAP |
+| SAP SuccessFactors | [`successfactors.py`](successfactors.py) | Scotiabank, EY, Leonardo DRS, SAP, CMHC, Bank of Canada, Canadian Blood Services, Canada Post, National Research Council, Skyworks, Telus, Hydro One |
 | Jibe (iCIMS) | [`jibe.py`](jibe.py) | KPMG |
 
 **Adding a company on an existing platform = one line in `companies.py`.** A new

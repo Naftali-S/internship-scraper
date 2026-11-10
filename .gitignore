@@ -15,6 +15,9 @@ data/*.db
 data/*.sqlite
 data/*.sqlite3
 
+# --- Claude Code working files (planning docs with personal details) ---
+.claude/
+
 # --- Editor / OS junk ---
 .vscode/
 .idea/

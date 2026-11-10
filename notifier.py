@@ -120,8 +120,8 @@ def format_html(postings, flags=()):
     <div style="background:#f4f5f7;padding:24px 12px;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
       <div style="max-width:640px;margin:0 auto;">
         <div style="background:#16213e;border-radius:14px;padding:28px 24px;margin:0 0 8px 0;">
-          <div style="font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.01em;">&#127891; Internship Digest</div>
-          <div style="font-size:13px;color:#aab3c5;margin-top:6px;">Ottawa &middot; Kanata &middot; Canada-remote &mdash; Summer 2027</div>
+          <div style="font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.01em;">Internship Digest</div>
+          <div style="font-size:13px;color:#aab3c5;margin-top:6px;">Ottawa &middot; Kanata &middot; Canada-remote &middot; Summer 2027</div>
           <div style="font-size:13px;color:#8b97b0;margin-top:16px;">{stats}</div>
         </div>
         {sections}

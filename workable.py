@@ -21,9 +21,12 @@ def scrape_workable(company, account_id):
         if not is_internship(title):
             continue
 
-        loc = job.get("location", {}) or {}
-        location = ", ".join(x for x in (loc.get("city"), loc.get("region"), loc.get("country")) if x)
-        if loc.get("telecommuting"):
+        # a job can be open in several places; join them all into one string
+        parts = []
+        for loc in job.get("locations", []):
+            parts.append(", ".join(x for x in (loc.get("city"), loc.get("region"), loc.get("country")) if x))
+        location = "; ".join(p for p in parts if p)
+        if job.get("telecommuting"):
             location += " (Remote)"
 
         description = job.get("description", "") or ""

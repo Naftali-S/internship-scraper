@@ -6,6 +6,7 @@ description, so (like Workday) we fetch each target intern's job page for it.
 Unlocks: Scotiabank, EY, Leonardo DRS, SAP.
 """
 
+import html
 import time
 import requests
 
@@ -67,7 +68,8 @@ def _fetch_list(base, company, term, location):
                 posted_at = row.split('class="jobDate', 1)[1].split(">", 1)[1].split("<", 1)[0].strip()
             postings.append(Posting(
                 company=company,
-                title=row.split('class="jobTitle-link">', 1)[1].split("</a>", 1)[0].strip(),
+                # the page writes "&" as "&amp;", so turn it back into plain text
+                title=html.unescape(row.split('class="jobTitle-link">', 1)[1].split("</a>", 1)[0].strip()),
                 location=row.split('class="jobLocation">', 1)[1].split("<", 1)[0].strip(),
                 url=base + href,
                 job_id=href.rstrip("/").rsplit("/", 1)[-1],

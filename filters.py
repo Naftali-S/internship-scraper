@@ -1,6 +1,9 @@
 import re
 
 INTERN_KEYWORDS = ["intern", "co-op", "coop", "student"]
+# Words that contain "intern" but aren't internships ("Director, International
+# Relations"). They're removed from the title before the keyword check.
+INTERN_LOOKALIKES = ["international", "internal", "internet"]
 LOCATION_KEYWORDS = ["ottawa", "kanata"]
 REMOTE_CANADA_KEYWORDS = ["remote-canada", "remote - canada", "canada remote", "remote, canada"]
 # Target the SUMMER term (roughly May–September) for the upcoming cycle.
@@ -54,6 +57,8 @@ def _is_summer(text):
 
 def is_internship(title):
     text = title.lower()
+    for word in INTERN_LOOKALIKES:
+        text = text.replace(word, "")
     return any(keyword in text for keyword in INTERN_KEYWORDS)
 
 def is_target_location(location):
