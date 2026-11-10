@@ -23,7 +23,6 @@ COMPANIES = [
     {"name": "Cisco",      "ats": "workday", "tenant": "cisco",      "dc": "wd5", "site": "Cisco_Careers"},
     {"name": "CAE",        "ats": "workday", "tenant": "cae",        "dc": "wd3", "site": "career"},
     {"name": "Trend Micro","ats": "workday", "tenant": "trendmicro", "dc": "wd3", "site": "External"},
-    {"name": "Deloitte",   "ats": "smartrecruiters", "slug": "Deloitte6"},
     {"name": "Adobe",      "ats": "workday", "tenant": "adobe", "dc": "wd5", "site": "external_experienced"},
     {"name": "BMO",        "ats": "workday", "tenant": "bmo",      "dc": "wd3", "site": "Campus"},
     {"name": "Manulife",   "ats": "workday", "tenant": "manulife", "dc": "wd3", "site": "MFCJH_Jobs"},

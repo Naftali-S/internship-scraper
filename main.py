@@ -70,11 +70,18 @@ def run():
     flags = health.evaluate(outcomes, baselines)
     record_runs(conn, outcomes)
 
-    existing = get_existing_keys(conn)
-    new = [p for p in postings if p.unique_key not in existing]
+    # Keep postings never seen before, and only once each in case a scraper
+    # returned the same job twice in this run.
+    seen = get_existing_keys(conn)
+    new = []
+    for p in postings:
+        if p.unique_key not in seen:
+            seen.add(p.unique_key)
+            new.append(p)
 
     send_digest(new, flags)
     save_postings(conn, new)
+    conn.close()
 
     print(f"Scanned {len(COMPANIES)} companies, kept {len(postings)} relevant, {len(new)} new")
     for f in flags:

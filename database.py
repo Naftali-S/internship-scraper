@@ -1,6 +1,9 @@
 import sqlite3
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from models import Posting, _now_iso
+
+RUN_HISTORY_DAYS = 60   # the health check only reads the last few runs
 
 
 def get_connection(db_path="data/postings.db"):
@@ -56,6 +59,9 @@ def record_runs(conn, outcomes):
         "INSERT INTO scrape_runs (company, run_at, status, found, error) VALUES (?, ?, ?, ?, ?)",
         rows,
     )
+    # Drop old history so the database (committed on every run) stops growing.
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=RUN_HISTORY_DAYS)).isoformat()
+    conn.execute("DELETE FROM scrape_runs WHERE run_at < ?", (cutoff,))
     conn.commit()
     
 def recent_counts(conn, company, limit=5):

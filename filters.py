@@ -5,7 +5,9 @@ INTERN_KEYWORDS = ["intern", "co-op", "coop", "student"]
 # Relations"). They're removed from the title before the keyword check.
 INTERN_LOOKALIKES = ["international", "internal", "internet"]
 LOCATION_KEYWORDS = ["ottawa", "kanata"]
-REMOTE_CANADA_KEYWORDS = ["remote-canada", "remote - canada", "canada remote", "remote, canada"]
+# "canada (remote)" is how the scrapers that add a " (Remote)" suffix write a
+# Canada-wide remote job (Workable, BambooHR, Dayforce), e.g. Fidus Systems.
+REMOTE_CANADA_KEYWORDS = ["remote-canada", "remote - canada", "canada remote", "remote, canada", "canada (remote)"]
 # Target the SUMMER term (roughly May–September) for the upcoming cycle.
 # "summer" is the core signal and catches "Summer Intern", "Summer 2027",
 # "Winter or Summer 2027", etc. The month-range phrasings catch summer roles
@@ -68,12 +70,6 @@ def is_target_location(location):
     if any(keyword in loc for keyword in REMOTE_CANADA_KEYWORDS):
         return True
     return False
-
-def filter_postings(postings):
-    return [
-        p for p in postings
-        if is_internship(p.title) and is_target_location(p.location)
-    ]
 
 def mentions_term(title, description=""):
     """Decide whether a posting is a SUMMER-term role.

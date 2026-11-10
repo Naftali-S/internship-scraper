@@ -5,7 +5,7 @@ from filters import is_internship, is_target_location, mentions_term
 def scrape_lever(company, slug):
     url = f"https://api.lever.co/v0/postings/{slug}?mode=json"
     response = fetch.get(url, timeout=30)
-    jobs = response.json()  #a list of posting discts
+    jobs = response.json()  # a list of posting dicts
 
     result = []
     for job in jobs:

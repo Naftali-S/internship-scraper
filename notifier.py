@@ -12,7 +12,7 @@ EMAIL_APP_PASSWORD = os.getenv("EMAIL_APP_PASSWORD")
 EMAIL_TO = os.getenv("EMAIL_TO")
 
 def format_body(postings, flags=()):
-    lines = [f"{len(postings)} new internship posting(s):", ""]
+    lines = []
     if flags:
         lines.append("HEALTH ALERTS:")
         lines += [f"- {f}" for f in flags]
@@ -32,11 +32,11 @@ def send_digest(postings, flags=()):
 
     if postings:
         subject = f"[Internships] {len(postings)} new posting(s)"
-        html = format_html(postings, flags)          # digest, with a banner if flags
+        html_body = format_html(postings, flags)     # digest, with a banner if flags
         text = format_body(postings, flags)
     else:
         subject = "[Internships] scraper health alert"
-        html = None                                  # plain text is enough for an alert
+        html_body = None                             # plain text is enough for an alert
         text = "Scraper health alert:\n\n" + "\n".join(f"- {f}" for f in flags)
 
     msg = EmailMessage()
@@ -44,14 +44,16 @@ def send_digest(postings, flags=()):
     msg["From"] = EMAIL_ADDRESS
     msg["To"] = EMAIL_TO
     msg.set_content(text)
-    if html:
-        msg.add_alternative(html, subtype="html")
+    if html_body:
+        msg.add_alternative(html_body, subtype="html")
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(EMAIL_ADDRESS, EMAIL_APP_PASSWORD)
         server.send_message(msg)
 
     print(f"Emailed: {subject} -> {EMAIL_TO}")
+
+
 def _pretty_date(value):
     """ISO timestamp -> 'Sep 07, 2026'. Non-ISO strings pass through unchanged."""
     if not value:

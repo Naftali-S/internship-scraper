@@ -5,11 +5,6 @@ import requests
 from models import Posting
 from filters import is_internship, is_target_location, mentions_term
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; internship-scraper/0.1)",
-    "Accept": "application/json",
-}
-
 # Safety net: some tenants (e.g. Canadian banks) return their whole board for a
 # broad search term, so cap how far any single search will paginate. The narrow
 # "Ottawa"/"Kanata" searches finish long before this; only the broad "Remote"

@@ -12,15 +12,18 @@ import fetch
 from models import Posting
 from filters import is_internship, is_target_location, mentions_term
 
+MAX_LIST_PAGES = 10
+
 
 def scrape_smartrecruiters(company, slug):
     base = f"https://api.smartrecruiters.com/v1/companies/{slug}/postings"
 
-    # 1) page through the list (100 per page)
+    # 1) page through the Canadian jobs (100 per page); country=ca narrows the
+    #    list server-side (ServiceNow: 754 jobs -> 23)
     raw = []
     offset = 0
-    while True:
-        resp = fetch.get(base, params={"limit": 100, "offset": offset}, timeout=30)
+    for _ in range(MAX_LIST_PAGES):
+        resp = fetch.get(base, params={"limit": 100, "offset": offset, "country": "ca"}, timeout=30)
         data = resp.json()
         content = data.get("content", [])
         if not content:
