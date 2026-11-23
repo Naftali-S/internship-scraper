@@ -13,26 +13,29 @@ from models import Posting
 from filters import is_internship, is_target_location, mentions_term
 
 MAX_LIST_PAGES = 10
+# Country codes per region; the country filter narrows the list server-side
+# (ServiceNow: 754 jobs -> 23 for Canada).
+COUNTRIES = {"ca": ("ca",), "uk": ("gb", "ie")}
 
 
-def scrape_smartrecruiters(company, slug):
+def scrape_smartrecruiters(company, slug, regions=("ca",)):
     base = f"https://api.smartrecruiters.com/v1/companies/{slug}/postings"
 
-    # 1) page through the Canadian jobs (100 per page); country=ca narrows the
-    #    list server-side (ServiceNow: 754 jobs -> 23)
+    # 1) page through each country's jobs (100 per page)
     raw = []
-    offset = 0
-    for _ in range(MAX_LIST_PAGES):
-        resp = fetch.get(base, params={"limit": 100, "offset": offset, "country": "ca"}, timeout=30)
-        data = resp.json()
-        content = data.get("content", [])
-        if not content:
-            break
-        raw.extend(content)
-        offset += 100
-        if offset >= data.get("totalFound", 0):
-            break
-        time.sleep(0.3)
+    for country in [c for region in regions for c in COUNTRIES[region]]:
+        offset = 0
+        for _ in range(MAX_LIST_PAGES):
+            resp = fetch.get(base, params={"limit": 100, "offset": offset, "country": country}, timeout=30)
+            data = resp.json()
+            content = data.get("content", [])
+            if not content:
+                break
+            raw.extend(content)
+            offset += 100
+            if offset >= data.get("totalFound", 0):
+                break
+            time.sleep(0.3)
 
     # 2) keep interns; fetch each one's detail for description + a clean URL
     result = []

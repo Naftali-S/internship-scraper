@@ -10,16 +10,23 @@ from filters import is_internship, is_target_location, mentions_term
 # "Ottawa"/"Kanata" searches finish long before this; only the broad "Remote"
 # pass ever hits it, and the location prefilter discards the rest anyway.
 MAX_LIST_PAGES = 10
-SEARCH_TERMS = ("Ottawa", "Kanata", "Remote")
+# Search terms per region. Canada searches by city. The UK searches by intern
+# words instead, because Workday's location text is inconsistent ("UK - London",
+# "London, Greater London", "Templecombe") and "United Kingdom" finds nothing at
+# some tenants; the location filter then keeps only the UK and Irish results.
+SEARCH_TERMS = {
+    "ca": ("Ottawa", "Kanata", "Remote"),
+    "uk": ("intern", "internship", "summer"),
+}
 
-def scrape_workday(company, tenant, data_center, site):
+def scrape_workday(company, tenant, data_center, site, regions=("ca",)):
     """Scrape on Workday careers site and return its relevant postings."""
     cxs_base = f"https://{tenant}.{data_center}.myworkdayjobs.com/wday/cxs/{tenant}/{site}"
     public_base = f"https://{tenant}.{data_center}.myworkdayjobs.com/en-US/{site}"
-    
+
     all_postings = []
     seen = set()
-    for term in SEARCH_TERMS:
+    for term in [t for region in regions for t in SEARCH_TERMS[region]]:
         for p in _fetch_list(cxs_base, public_base, company, term):
             if p.job_id not in seen:
                 seen.add(p.job_id)

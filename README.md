@@ -1,9 +1,11 @@
 # Internship Scraping Tool
 
 A small, self-hosted tool that watches company career pages for **summer-term
-internship / co-op postings** (roughly May–September) located in **Ottawa,
-Kanata, or Canada-remote**, stores them in a local database, and **emails me
-only the new ones**. It runs automatically and for free on **GitHub Actions**.
+internship / co-op postings** (roughly May to September) located in **Ottawa,
+Kanata, Canada-remote, the UK or Ireland**, stores them in a local database, and
+**emails me only the new ones**. It runs on a schedule (GitHub Actions' schedule
+is paused because Workday blocks GitHub's servers; the scheduled run is moving
+to a home server).
 
 > This repo doubles as a learning log. I'm building it to get hands-on
 > experience with web scraping, hidden JSON APIs, databases, diffing, email
@@ -11,14 +13,15 @@ only the new ones**. It runs automatically and for free on **GitHub Actions**.
 
 ## Companies tracked
 
-**64 companies across 11 hiring platforms.** Each company is one row of config in
+**78 companies across 11 hiring platforms**, 35 of them also searched in the UK
+and Ireland (set per company with `"regions"` in `companies.py`). Each company is one row of config in
 [`companies.py`](companies.py); a shared scraper handles every company on the
 same platform.
 
 | Platform | Scraper | Companies |
 |---|---|---|
-| Workday | [`workday.py`](workday.py) | Ciena, BlackBerry, TD, CIBC, Mitel, Accenture, BDO, PwC, Thales, Lumentum, Cisco, CAE, Trend Micro, Adobe, BMO, Manulife, Sun Life, Marvell, Entrust, Salesforce, RingCentral, NAV CANADA, Curtiss-Wright, Giant Tiger |
-| Oracle Recruiting Cloud | [`oracle.py`](oracle.py) | Nokia, Oracle, Fortinet, Ford |
+| Workday | [`workday.py`](workday.py) | Ciena, BlackBerry, TD, CIBC, Mitel, Accenture, BDO, PwC, Thales, Lumentum, Cisco, CAE, Trend Micro, Adobe, BMO, Manulife, Sun Life, Marvell, Entrust, Salesforce, RingCentral, NAV CANADA, Curtiss-Wright, Giant Tiger, Rolls-Royce, AstraZeneca, GSK, Shell, Diageo, LSEG, Mastercard, BlackRock, State Street, Airbus, RELX, Lloyds Banking Group, Fidelity Investments |
+| Oracle Recruiting Cloud | [`oracle.py`](oracle.py) | Nokia, Oracle, Fortinet, Ford, JPMorgan Chase |
 | Eightfold | [`eightfold.py`](eightfold.py) | Ericsson, Lockheed Martin |
 | SmartRecruiters | [`smartrecruiters.py`](smartrecruiters.py) | ServiceNow, Assent, ADGA Group |
 | Ashby | [`ashby.py`](ashby.py) | Solace, Rewind, Cohere, Dominion Dynamics |
@@ -55,8 +58,20 @@ scrapers  ->  filter (location + summer term)  ->  SQLite (diff vs. seen)  ->  e
 
 ### Location filter
 
-A posting is in scope if its location mentions **Ottawa** or **Kanata**, or is a
-**Canada-remote** role.
+A posting is in scope if its location mentions **Ottawa** or **Kanata**, is a
+**Canada-remote** role, or is in the **UK or Ireland**. A UK or Irish country word
+("United Kingdom", "Scotland", "GBR", "Ireland") always counts. A city name on its
+own ("London", "Dublin", "Cambridge") only counts when nothing Canadian or American
+is in the same location, because "London, Ontario", "Dublin, OH" and "Cambridge,
+Massachusetts" are common in job listings.
+
+### Year-of-study filter
+
+Set once in `filters.py` with `INTERNSHIP_YEAR` and `GRADUATION_YEAR` (bump each
+cycle). A posting is dropped if it is limited to students graduating earlier
+("penultimate year" this cycle, "graduating in 2027 or 2028"), or if its title is
+a placement longer than a summer ("12-month", "industrial placement", "year in
+industry").
 
 ### Summer-term filter
 

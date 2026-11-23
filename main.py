@@ -18,21 +18,24 @@ import health
 def scrape_company(company):
     """Route a company entry to the right platform scraper."""
     ats = company["ats"]
+    # Which countries to search ("ca", "uk"); only scrapers that search by
+    # location server-side need it, the rest filter locally.
+    regions = company.get("regions", ["ca"])
     if ats == "workday":
-        return scrape_workday(company["name"], company["tenant"], company["dc"], company["site"])
+        return scrape_workday(company["name"], company["tenant"], company["dc"], company["site"], regions)
     # future: elif ats == "greenhouse": return scrape_greenhouse(...)
     if ats == "lever":
         return scrape_lever(company["name"], company["slug"])
     if ats == "ashby":
         return scrape_ashby(company["name"], company["slug"])
     if ats == "smartrecruiters":
-        return scrape_smartrecruiters(company["name"], company["slug"])
+        return scrape_smartrecruiters(company["name"], company["slug"], regions)
     if ats == "workable":
         return scrape_workable(company["name"], company["account_id"])
     if ats == "oracle":
-        return scrape_oracle(company["name"], company["pod"], company["site"])
+        return scrape_oracle(company["name"], company["pod"], company["site"], regions)
     if ats == "eightfold":
-        return scrape_eightfold(company["name"], company["host"], company["domain"])
+        return scrape_eightfold(company["name"], company["host"], company["domain"], regions)
     if ats == "bamboohr":
         return scrape_bamboohr(company["name"], company["subdomain"])
     if ats == "dayforce":

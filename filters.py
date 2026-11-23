@@ -8,6 +8,50 @@ LOCATION_KEYWORDS = ["ottawa", "kanata"]
 # "canada (remote)" is how the scrapers that add a " (Remote)" suffix write a
 # Canada-wide remote job (Workable, BambooHR, Dayforce), e.g. Fidus Systems.
 REMOTE_CANADA_KEYWORDS = ["remote-canada", "remote - canada", "canada remote", "remote, canada", "canada (remote)"]
+
+# --- UK and Ireland ---
+# A country word anywhere in the location is enough ("Glasgow, Scotland",
+# "Ampthill, GBR", "UK-Wimborne", "Dublin 2, Ireland").
+UK_IE_COUNTRY_WORDS = {"uk", "gb", "gbr", "england", "scotland", "wales", "britain", "ireland", "ie", "irl"}
+UK_IE_COUNTRY_PHRASES = ["united kingdom", "great britain", "northern ireland", "republic of ireland"]
+
+# A city name alone ("London", "London (Remote)") only counts when nothing
+# Canadian or American is in the same location. London, Cambridge, Windsor,
+# Dublin, Manchester and Bristol all exist in Canada or the US too
+# ("London, Ontario", "London (ON), ON, CA", "US-CT-New London", "Dublin, OH").
+UK_IE_CITIES = [
+    "london", "manchester", "birmingham", "leeds", "glasgow", "edinburgh", "bristol",
+    "cardiff", "belfast", "newcastle", "liverpool", "sheffield", "nottingham", "leicester",
+    "derby", "reading", "cambridge", "oxford", "southampton", "coventry", "milton keynes",
+    "brighton", "crawley", "stevenage", "guildford", "warwick", "swindon", "chester",
+    "knutsford", "northampton", "bournemouth", "telford", "aberdeen", "dundee", "bath",
+    "york", "slough", "staines", "sunbury", "weybridge", "macclesfield", "basingstoke",
+    "farnborough", "farringdon", "canary wharf", "gatwick", "filton",
+    "dublin", "cork", "galway", "limerick", "waterford", "athlone", "kilkenny",
+]
+NORTH_AMERICA_WORDS = {
+    "canada", "ontario", "on", "ca", "quebec", "qc", "alberta", "ab", "bc", "manitoba",
+    "toronto", "montreal", "vancouver", "calgary", "edmonton", "winnipeg", "halifax",
+    "mississauga", "waterloo", "kitchener", "saskatoon", "regina", "burnaby", "markham",
+    "usa", "us", "america",
+    # US state abbreviations; "in", "or", "me", "hi", "ok", "de" and "id" are left out
+    # because they are also ordinary words
+    "al", "ak", "az", "ar", "co", "ct", "fl", "ga", "ia", "il", "ks", "ky", "la", "ma",
+    "md", "mi", "mn", "mo", "ms", "mt", "nc", "nd", "ne", "nh", "nj", "nm", "nv", "ny",
+    "oh", "pa", "ri", "sc", "sd", "tn", "tx", "ut", "va", "vt", "wa", "wi", "wv", "wy",
+}
+# Full US state names catch "Cambridge, Massachusetts"; "new york" stops York matching.
+NORTH_AMERICA_PHRASES = [
+    "united states", "new london", "new york", "new jersey", "new hampshire",
+    "alabama", "alaska", "arizona", "arkansas", "california", "colorado", "connecticut",
+    "delaware", "florida", "georgia", "hawaii", "idaho", "illinois", "indiana", "iowa",
+    "kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts", "michigan",
+    "minnesota", "mississippi", "missouri", "montana", "nebraska", "nevada", "new mexico",
+    "north carolina", "north dakota", "ohio", "oklahoma", "oregon", "pennsylvania",
+    "rhode island", "south carolina", "south dakota", "tennessee", "texas", "utah",
+    "vermont", "virginia", "washington", "wisconsin", "wyoming",
+    "british columbia", "nova scotia", "new brunswick", "saskatchewan", "newfoundland",
+]
 # Target the SUMMER term (roughly May–September) for the upcoming cycle.
 # "summer" is the core signal and catches "Summer Intern", "Summer 2027",
 # "Winter or Summer 2027", etc. The month-range phrasings catch summer roles
@@ -54,6 +98,35 @@ OTHER_TERM_KEYWORDS = [
 _SUMMER_START = re.compile(r"start\w*[^.\n]{0,20}\b(?:may|june)\b[.,\s]+\d")
 
 
+# --- Year of study ---
+# Bump both every cycle. Postings that only take students graduating before
+# GRADUATION_YEAR are dropped (most UK internships are "penultimate year" only,
+# which for a 2029 graduate means the summer 2028 cycle, not 2027).
+INTERNSHIP_YEAR = 2027
+GRADUATION_YEAR = 2029
+# "Graduating in 2027", "expected graduation between Dec 2027 and Jun 2028",
+# "class of 2028". The window after the phrase is scanned for years.
+_GRAD_PHRASE = re.compile(r"\b(?:graduating|graduation|graduate in|graduate by|class of)\b(.{0,60})")
+_YEAR = re.compile(r"\b20\d\d\b")
+# Placements longer than a summer don't fit May to August.
+LONG_PLACEMENT_KEYWORDS = [
+    "placement year", "industrial placement", "year in industry", "year-long", "year long",
+    "6 month", "6-month", "8 month", "8-month", "12 month", "12-month", "13 month", "13-month",
+    "16 month", "16-month",
+]
+
+
+def _year_eligible(text):
+    """False when the posting is limited to students graduating before GRADUATION_YEAR."""
+    penultimate_ok = GRADUATION_YEAR == INTERNSHIP_YEAR + 1
+    if "penultimate" in text and not penultimate_ok:
+        return False
+    years = [int(y) for window in _GRAD_PHRASE.findall(text) for y in _YEAR.findall(window)]
+    if years and max(years) < GRADUATION_YEAR:
+        return False
+    return True
+
+
 def _is_summer(text):
     return any(k in text for k in TERM_KEYWORDS) or bool(_SUMMER_START.search(text))
 
@@ -64,14 +137,38 @@ def is_internship(title):
     return any(keyword in text for keyword in INTERN_KEYWORDS)
 
 def is_target_location(location):
-    loc = location.lower()
+    loc = (location or "").lower()
     if any(keyword in loc for keyword in LOCATION_KEYWORDS):
         return True
     if any(keyword in loc for keyword in REMOTE_CANADA_KEYWORDS):
         return True
-    return False
+    return is_uk_ie_location(loc)
+
+def is_uk_ie_location(location):
+    loc = (location or "").lower()
+    words = set(re.findall(r"[a-z]+", loc))
+    if words & UK_IE_COUNTRY_WORDS or any(p in loc for p in UK_IE_COUNTRY_PHRASES):
+        return True
+    if words & NORTH_AMERICA_WORDS or any(p in loc for p in NORTH_AMERICA_PHRASES):
+        return False
+    return any(re.search(rf"\b{city}\b", loc) for city in UK_IE_CITIES)
 
 def mentions_term(title, description=""):
+    """Decide whether a posting is a summer role this student can apply to.
+
+    Two checks: the role is open to his year of study (see _year_eligible) and
+    isn't a long placement, and it is a SUMMER-term role (_summer_term).
+    """
+    t = title.lower()
+    d = (description or "").lower()
+    if any(k in t for k in LONG_PLACEMENT_KEYWORDS):
+        return False
+    if not _year_eligible(t + " " + d):
+        return False
+    return _summer_term(t, d)
+
+
+def _summer_term(t, d):
     """Decide whether a posting is a SUMMER-term role.
 
     The title is authoritative when it names a term; the description is only a
@@ -79,13 +176,11 @@ def mentions_term(title, description=""):
     Jan/Sept posting's body enumerates every term the employer offers, while
     still catching untermed-title co-ops whose term lives in the description.
     """
-    t = title.lower()
     if _is_summer(t):
         return True                       # title explicitly says summer
     if any(k in t for k in OTHER_TERM_KEYWORDS):
         return False                      # title explicitly says another term
-    d = (description or "").lower()        # title silent -> description decides
-    if _is_summer(d):
+    if _is_summer(d):                     # title silent -> description decides
         return True                       # summer word or a May/June start date
     if any(k in d for k in OTHER_TERM_KEYWORDS):
         return False                      # winter/fall word or start month

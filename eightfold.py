@@ -25,7 +25,12 @@ from filters import is_internship, is_target_location, mentions_term
 
 PAGE_SIZE = 10                       # the API caps `num` at 10
 MAX_LIST_PAGES = 20                  # safety net against a runaway loop
-LOCATION_QUERY = "Ottawa, Canada"    # geo search; radius covers Kanata too
+# Geo searches per region; each radius covers the city's metro area (Ottawa's covers Kanata).
+LOCATION_QUERIES = {
+    "ca": ("Ottawa, Canada",),
+    "uk": ("London, United Kingdom", "Manchester, United Kingdom",
+           "Edinburgh, United Kingdom", "Dublin, Ireland"),
+}
 
 # The search API returns no description, but each job page embeds a schema.org
 # JobPosting as JSON-LD (stable, standardised) with the full body + validThrough
@@ -35,7 +40,7 @@ _JSONLD_RE = re.compile(r'<script[^>]+application/ld\+json[^>]*>(.*?)</script>',
 _TAG_RE = re.compile(r'<[^>]+>')
 
 
-def scrape_eightfold(company, host, domain):
+def scrape_eightfold(company, host, domain, regions=("ca",)):
     base = f"https://{host}/api/pcsx/search"
     headers = {
         "User-Agent": "Mozilla/5.0 (compatible; internship-scraper/0.1)",
@@ -45,7 +50,8 @@ def scrape_eightfold(company, host, domain):
 
     result = []
     seen = set()
-    for pos in _fetch_positions(base, domain, headers):
+    queries = [q for region in regions for q in LOCATION_QUERIES[region]]
+    for pos in [p for q in queries for p in _fetch_positions(base, domain, headers, q)]:
         job_id = str(pos.get("displayJobId") or pos.get("id") or "")
         if not job_id or job_id in seen:
             continue
@@ -81,11 +87,11 @@ def scrape_eightfold(company, host, domain):
     return result
 
 
-def _fetch_positions(base, domain, headers):
+def _fetch_positions(base, domain, headers, location):
     positions = []
     start = 0
     for _ in range(MAX_LIST_PAGES):
-        params = {"domain": domain, "location": LOCATION_QUERY,
+        params = {"domain": domain, "location": location,
                   "start": start, "num": PAGE_SIZE}
         response = fetch.get(base, params=params, headers=headers)
         data = response.json().get("data", {})

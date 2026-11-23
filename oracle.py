@@ -11,22 +11,27 @@ search avoids wrongly rejecting those. Unlocks: Oracle, Nokia.
 
 import fetch
 from models import Posting
-from filters import is_internship, mentions_term
+from filters import is_internship, is_target_location, mentions_term
 
 # Server-side location filter (Oracle keyword search). Narrow city terms keep
-# each query tiny, so a small page cap is plenty of headroom.
-LOCATION_KEYWORDS = ("Ottawa", "Kanata")
+# each query tiny, so a small page cap is plenty of headroom. Canadian results
+# trust the keyword (PrimaryLocation is often only "Canada"); UK results are
+# re-checked, because "London" also finds London, Ontario.
+LOCATION_KEYWORDS = {
+    "ca": ("Ottawa", "Kanata"),
+    "uk": ("London", "Manchester", "Edinburgh", "Dublin", "United Kingdom"),
+}
 PAGE_SIZE = 100
 MAX_LIST_PAGES = 5
 
 
-def scrape_oracle(company, pod, site):
+def scrape_oracle(company, pod, site, regions=("ca",)):
     base = f"https://{pod}/hcmRestApi/resources/latest/recruitingCEJobRequisitions"
     job_base = f"https://{pod}/hcmUI/CandidateExperience/en/sites/{site}/job"
 
     result = []
     seen = set()
-    for keyword in LOCATION_KEYWORDS:
+    for region, keyword in [(r, k) for r in regions for k in LOCATION_KEYWORDS[r]]:
         for req in _fetch_reqs(base, site, keyword):
             job_id = str(req.get("Id", ""))
             if not job_id or job_id in seen:
@@ -51,6 +56,8 @@ def scrape_oracle(company, pod, site):
             location = req.get("PrimaryLocation", "") or ""
             if secondary:
                 location = f"{location}, {secondary}" if location else secondary
+            if region != "ca" and not is_target_location(location):
+                continue
 
             result.append(Posting(
                 company=company,
