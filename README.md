@@ -11,7 +11,7 @@ only the new ones**. It runs automatically and for free on **GitHub Actions**.
 
 ## Companies tracked
 
-**65 companies across 11 hiring platforms.** Each company is one row of config in
+**64 companies across 11 hiring platforms.** Each company is one row of config in
 [`companies.py`](companies.py); a shared scraper handles every company on the
 same platform.
 
@@ -26,7 +26,7 @@ same platform.
 | Workable | [`workable.py`](workable.py) | Nuvei, Fidus Systems, Zone & Company, Export Development Canada, March Networks |
 | BambooHR | [`bamboohr.py`](bamboohr.py) | Giatec Scientific, CIRA, Enghouse |
 | Dayforce | [`dayforce.py`](dayforce.py) | Ross Video, Payments Canada, MindBridge, Field Effect |
-| SAP SuccessFactors | [`successfactors.py`](successfactors.py) | Scotiabank, EY, Leonardo DRS, SAP, CMHC, Bank of Canada, Canadian Blood Services, Canada Post, National Research Council, Skyworks, Telus, Hydro One |
+| SAP SuccessFactors | [`successfactors.py`](successfactors.py) | Scotiabank, EY, Leonardo DRS, CMHC, Bank of Canada, Canadian Blood Services, Canada Post, National Research Council, Skyworks, Telus, Hydro One |
 | Jibe (iCIMS) | [`jibe.py`](jibe.py) | KPMG |
 
 **Adding a company on an existing platform = one line in `companies.py`.** A new

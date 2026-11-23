@@ -48,7 +48,6 @@ COMPANIES = [
     {"name": "Scotiabank",        "ats": "successfactors", "host": "jobs.scotiabank.com"},
     {"name": "EY",                "ats": "successfactors", "host": "careers.ey.com"},
     {"name": "Leonardo DRS",      "ats": "successfactors", "host": "careers.leonardodrs.com"},
-    {"name": "SAP",               "ats": "successfactors", "host": "jobs.sap.com"},
     {"name": "KPMG",              "ats": "jibe", "host": "careers.kpmg.ca"},
     {"name": "CMHC",                      "ats": "successfactors", "host": "careers.cmhc-schl.gc.ca"},
     {"name": "Bank of Canada",            "ats": "successfactors", "host": "careers.bankofcanada.ca"},
